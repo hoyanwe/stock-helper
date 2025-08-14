@@ -1,0 +1,7 @@
+yfinance
+pandas
+numpy
+prophet
+scikit-learn
+statsmodels
+tqdm
