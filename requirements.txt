@@ -6,3 +6,5 @@ scikit-learn
 statsmodels
 tqdm
 fredapi
+permissions:
+  contents: write
