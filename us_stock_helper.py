@@ -14,6 +14,8 @@ import warnings
 warnings.filterwarnings("ignore")
 
 import io, requests
+import os
+import subprocess
 import numpy as np
 import pandas as pd
 import yfinance as yf
@@ -35,7 +37,7 @@ from fredapi import Fred
 
 # ========= Config =========
 # 建议将真实 key 放到环境变量中
-FRED_API_KEY = "eaf1231c7511a3f10fbded1d1e455d95"
+FRED_API_KEY = os.getenv("FRED_API_KEY")
 fred = Fred(api_key=FRED_API_KEY)
 
 TICKERS = ["LLY", "NVO", "AAPL", "META", "NVDA", "AMZN", "TSLA", "AMD", "MSFT", "GOOGL"]
@@ -556,6 +558,17 @@ if all_ensemble:
     pd.concat(all_ensemble).to_csv("predictions_ensemble.csv", index=False)
 if all_importances:
     pd.concat(all_importances).to_csv("feature_importance.csv", index=False)
+
+# 添加并提交 CSV 到仓库
+subprocess.run(["git", "config", "--global", "user.name", "github-actions"])
+subprocess.run(["git", "config", "--global", "user.email", "github-actions@github.com"])
+subprocess.run(["git", "add", "*.csv"])
+subprocess.run(["git", "diff", "--cached", "--quiet"])  # 如果没变化，返回码 0
+if subprocess.run(["git", "diff", "--cached", "--quiet"]).returncode != 0:
+    subprocess.run(["git", "commit", "-m", "Auto-update forecast CSV"])
+    subprocess.run(["git", "push"])
+else:
+    print("No CSV changes, skip commit.")
 
 print("\n=== 完成（Prophet + Kalman(兼容多版本) + ARIMA(稳健) + Lasso滚动 + 集成）===\n"
       "说明：Kalman 使用多种方式提取平滑状态（smoothed_state / states.smoothed / level_smoothed），以兼容不同 statsmodels 版本。")
