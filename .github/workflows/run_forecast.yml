@@ -1,5 +1,8 @@
 name: Daily Forecast
 
+permissions:
+  contents: write  # 允许 GitHub Actions 修改仓库内容
+
 on:
   schedule:
     - cron: "0 0 * * *"  # UTC 时间每天 00:00 执行（换算成你时区自己改）
